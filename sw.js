@@ -1,5 +1,7 @@
-const CACHE = "lantern-v1";
-const FILES = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
+const CACHE = "lantern-v1.1.1";
+// const FILES = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
+const FILES = ["./", "./index.html", "./style.css", "./game.js", "./assets/characters.json",
+  "./manifest.json", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));

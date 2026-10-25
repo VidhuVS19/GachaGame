@@ -6,27 +6,7 @@
 <meta charset="utf-8">
 <title>Lantern Pulls</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<style>
-:root{--bg:#10252a;--panel:#183840;--ink:#f3ead8;--dim:#8fa9a6;--r3:#7fb7c4;--r4:#b79cf0;--r5:#f2b84b;color-scheme:dark;
-padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
-*{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,'Times New Roman',serif}
-main{max-width:480px;margin:0 auto;padding:16px}
-h1{font-size:26px;margin:4px 0 14px}
-.bar{display:flex;justify-content:space-between;background:var(--panel);padding:12px 14px;border-radius:10px}
-.bar b{font-size:20px}.dim{color:var(--dim);font-size:14px}
-button{font:inherit;color:#1a1305;background:var(--r5);border:0;border-radius:10px;padding:14px;width:100%;margin-top:12px;font-size:18px}
-button:disabled{opacity:.4}
-button.alt{background:var(--panel);color:var(--ink)}
-#result{min-height:110px;margin:14px 0;text-align:center;font-size:56px}
-#result .n{font-size:18px;display:block;margin-top:6px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.card{background:var(--panel);border-radius:8px;text-align:center;padding:8px 2px;font-size:28px;border-bottom:3px solid var(--c)}
-.card small{display:block;font-size:11px;color:var(--dim)}
-.card.off{opacity:.25}
-@media (prefers-reduced-motion:no-preference){#result .pop{animation:pop .35s}}
-@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <main>
@@ -40,77 +20,6 @@ button.alt{background:var(--panel);color:var(--ink)}
 <div class="grid" id="grid"></div>
 <button class="alt" id="reset" style="margin-top:28px;font-size:14px;padding:8px">Reset save</button>
 </main>
-<script>
-// ---- DATA: edit this to add characters. Replace emoji with image paths later. ----
-const CHARS=[
- {id:1,name:"Moth",icon:"🦋",r:3},{id:2,name:"Frog",icon:"🐸",r:3},{id:3,name:"Snail",icon:"🐌",r:3},
- {id:4,name:"Beetle",icon:"🪲",r:3},{id:5,name:"Mouse",icon:"🐭",r:3},{id:6,name:"Crab",icon:"🦀",r:3},
- {id:7,name:"Fox",icon:"🦊",r:4},{id:8,name:"Owl",icon:"🦉",r:4},{id:9,name:"Koi",icon:"🐟",r:4},
- {id:10,name:"Dragon",icon:"🐉",r:5},{id:11,name:"Phoenix",icon:"🦅",r:5}
-];
-const RATES={5:0.03,4:0.17,3:0.80}, PITY_MAX=30, COST=10, PER_SEC=1, OFFLINE_CAP=8*3600;
-const COLOR={3:"var(--r3)",4:"var(--r4)",5:"var(--r5)"};
-
-// ---- SAVE / LOAD ----
-const KEY="lantern-save-v1";
-let S={gems:50,pity:0,owned:{},last:Date.now()};
-try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw))}catch(e){}
-function save(){S.last=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-
-// ---- IDLE INCOME ----
-function tickIdle(){
-  const now=Date.now(), secs=Math.min((now-S.last)/1000,OFFLINE_CAP);
-  S.gems+=secs*PER_SEC; S.last=now;
-}
-
-// ---- PULL LOGIC ----
-function rollRarity(){
-  if(S.pity>=PITY_MAX-1) return 5;
-  const x=Math.random();
-  if(x<RATES[5]) return 5;
-  if(x<RATES[5]+RATES[4]) return 4;
-  return 3;
-}
-function pullOnce(){
-  const r=rollRarity();
-  S.pity = r===5 ? 0 : S.pity+1;
-  const pool=CHARS.filter(c=>c.r===r);
-  const c=pool[Math.floor(Math.random()*pool.length)];
-  S.owned[c.id]=(S.owned[c.id]||0)+1;
-  return c;
-}
-function doPull(n){
-  const cost=COST*n;
-  if(S.gems<cost) return;
-  S.gems-=cost;
-  const got=[];for(let i=0;i<n;i++)got.push(pullOnce());
-  const best=got.reduce((a,b)=>b.r>a.r?b:a);
-  const el=document.getElementById("result");
-  el.innerHTML=`<div class="pop">${n===1?best.icon:got.map(g=>g.icon).join("")}<span class="n" style="color:${COLOR[best.r]}">${n===1?best.name+" "+"★".repeat(best.r):"Best: "+best.name+" "+"★".repeat(best.r)}</span></div>`;
-  el.style.fontSize=n===1?"56px":"28px";
-  save();render();
-}
-
-// ---- RENDER ----
-function render(){
-  document.getElementById("gems").textContent=Math.floor(S.gems);
-  document.getElementById("pity").textContent=S.pity;
-  document.getElementById("pull").disabled=S.gems<COST;
-  document.getElementById("pull10").disabled=S.gems<COST*10;
-  const owned=CHARS.filter(c=>S.owned[c.id]).length;
-  document.getElementById("count").textContent=`${owned}/${CHARS.length}`;
-  document.getElementById("grid").innerHTML=CHARS.slice().sort((a,b)=>b.r-a.r).map(c=>{
-    const n=S.owned[c.id]||0;
-    return `<div class="card ${n?"":"off"}" style="--c:${COLOR[c.r]}">${n?c.icon:"?"}<small>${n?c.name+(n>1?" ×"+n:""):"???"}</small></div>`}).join("");
-}
-
-document.getElementById("pull").onclick=()=>doPull(1);
-document.getElementById("pull10").onclick=()=>doPull(10);
-document.getElementById("reset").onclick=()=>{if(confirm("Delete your save?")){try{localStorage.removeItem(KEY)}catch(e){}location.reload()}};
-document.addEventListener("visibilitychange",()=>{if(!document.hidden){tickIdle();render()}else save()});
-tickIdle();render();
-setInterval(()=>{tickIdle();save();render()},1000);
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
-</script>
+<script src="game.js"></script>
 </body>
 </html>

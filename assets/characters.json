@@ -1,0 +1,22 @@
+[
+ {"id":1,"name":"Moth","icon":"🦋","r":3},
+ {"id":2,"name":"Frog","icon":"🐸","r":3},
+ {"id":3,"name":"Snail","icon":"🐌","r":3},
+ {"id":4,"name":"Butterfly","icon":"🦋","r":3},
+ {"id":5,"name":"Dragonfly","icon":"🐉","r":3},
+ {"id":6,"name":"Ladybug","icon":"🐞","r":3},
+ {"id":7,"name":"Beetle","icon":"🪲","r":3},
+ {"id":8,"name":"Caterpillar","icon":"🐛","r":3},
+ {"id":9,"name":"Grasshopper","icon":"🦗","r":3},
+ {"id":10,"name":"Cricket","icon":"🦗","r":3},
+ {"id":11,"name":"Ant","icon":"🐜","r":3},
+ {"id":12,"name":"Termite","icon":"🪳","r":3},
+ {"id":13,"name":"Cockroach","icon":"🪳","r":3},
+ {"id":14,"name":"Wasp","icon":"🐝","r":3},
+ {"id":15,"name":"Hornet","icon":"🐝","r":3},
+ {"id":16,"name":"Bee","icon":"🐝","r":3},
+ {"id":17,"name":"Fly","icon":"🪰","r":3},
+ {"id":18,"name":"Mosquito","icon":"🦟","r":3},
+ {"id":19,"name":"Eagle","icon":"🦅","r":4},
+ {"id":20,"name":"Dragon","icon":"🐉","r":5}
+]
