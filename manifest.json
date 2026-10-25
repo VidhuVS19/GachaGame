@@ -1,0 +1,13 @@
+{
+  "name": "Lantern Pulls",
+  "short_name": "Lantern",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#10252a",
+  "theme_color": "#10252a",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
